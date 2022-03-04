@@ -18,14 +18,13 @@ end
 function get_template_config()
 	local b
 	local d=""
-	local rcauto="/tmp/resolv.conf.auto"
-	if not fs.access(rcauto) then
-		rcauto="/tmp/resolv.conf.d/resolv.conf.auto"
-	end
-	for cnt in io.lines(rcauto) do
-		b=string.match (cnt,"^[^#]*nameserver%s+([^%s]+)$")
-		if (b~=nil) then
-			d=d.."  - "..b.."\n"
+	local reconf=uci:get_first("dhcp","dnsmasq","resolvfile")
+	if fs.access(reconf) then
+		for cnt in io.lines(reconf) do
+			b=string.match (cnt,"^[^#]*nameserver%s+([^%s]+)$")
+			if (b~=nil) then
+				d=d.."  - "..b.."\n"
+			end
 		end
 	end
 	local f=io.open("/usr/share/AdGuardHome/AdGuardHome_template.yaml", "r+")
